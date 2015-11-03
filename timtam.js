@@ -3,6 +3,9 @@ const program = require('commander');
 const pkg = require('./package')
 const util = require('util');
 const fileTransport = timtam.transports.file;
+const timtamMongo = require('timtam-mongo');
+
+console.dir(timtamMongo);
 
 
 /**
@@ -26,8 +29,12 @@ function convertToInt(v, defaultValue) {
  */
 function init(options) {
 	fileTransport.logPath = options.logPath;
-	timtam.bindUDP(options.port);
 	timtam.addTransport(fileTransport);
+
+	timtamMongo.init(options.mongo);
+	timtam.addTransport(timtamMongo);
+	
+	timtam.bindUDP(options.port);
 }
 
 program

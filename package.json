@@ -46,6 +46,8 @@
     "node-uuid": "^1.4.3",
     "require-tree": "^1.0.1",
     "superagent-extend": "0.0.1",
+    "timtam": "0.0.5",
+    "timtam-mongo": "0.0.2",
     "toobusy-js": "^0.4.2",
     "url-join": "0.0.1"
   },

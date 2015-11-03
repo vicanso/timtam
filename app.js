@@ -166,4 +166,28 @@ function initServer() {
 
   app.listen(port);
   console.info('server listen on:%s', port);
+
+  runTimtam(['-l',  '/Users/tree/tmp']);
+}
+
+
+function runTimtam (args) {
+  const spawn = require('child_process').spawn;
+  let file = path.join(__dirname, 'timtam.js');
+  args.unshift(file);
+  let cmd = spawn('node', args);
+
+  cmd.stdout.on('data', function (data) {
+    console.info('stdout: ' + data);
+  });
+
+  cmd.stderr.on('data', function (data) {
+    console.error('stderr: ' + data);
+  });
+
+  cmd.on('close', function (code) {
+    console.info('child process exited with code ' + code);
+    runTimtam(args);
+  });
+
 }
