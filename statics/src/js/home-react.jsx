@@ -8,3 +8,9 @@ var CommentBox = React.createClass({
 ReactDOM.render( < CommentBox / > ,
   document.getElementById('content')
 );
+
+request.get('/log/count/test').then(function(res){
+	console.dir(res.body);
+}, function(err){
+
+});

@@ -64,7 +64,7 @@
     "gulp-stylus": "^2.1.0",
     "gulp-uglify": "^1.4.1",
     "nib": "^1.1.0",
-    "static-parser": "0.0.2",
+    "static-parser": "0.0.5",
     "through": "^2.3.8"
   },
   "readme": "timtam server",
