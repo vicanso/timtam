@@ -1,0 +1,11 @@
+{
+	"path": "/merge",
+	"except": [
+		"/component/pure.css",
+		"/component/font-awesome.css",
+		"/libs/lodash.js",
+		"/libs/promise.js",
+		"/libs/require.js"
+	],
+	"files": []
+}
