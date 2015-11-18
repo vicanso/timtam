@@ -108,6 +108,7 @@ function initRequireResourceLoadStats() {
 			type: 'fail'
 		};
 		if (CONFIG.env === 'development') {
+			throw err;
 			window.alert(JSON.stringify(data));
 		}
 		resources.push(data);

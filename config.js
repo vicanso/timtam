@@ -27,8 +27,7 @@ exports.staticBuildPath = path.join(__dirname, 'statics/build');
 // view文件目录
 exports.viewPath = path.join(__dirname, 'views');
 
-exports.processName = (process.env.NAME || 'unknown') + '-pm2-' + (process.env.pm_id ||
-	'unknown');
+exports.processName = process.env.NAME || process.env.HOSTNAME || process.pid;
 
 exports.appSetting = {
 	token: '6a3f4389a53c889b623e67f385f28ab8e84e5029',
@@ -42,6 +41,12 @@ exports.appSetting = {
 };
 
 exports.log = process.env.LOG || 'udp://127.0.0.1:6000';
+
+exports.logServer = process.env.LOG_SERVER || 'udp://127.0.0.1:6000';
+
+exports.logPath = '/data/timtam';
+
+exports.logMongoServer = 'mongodb://127.0.0.1/timtam';
 
 exports.consul = process.env.CONSUL || 'http://127.0.0.1:8500';
 

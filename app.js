@@ -186,4 +186,42 @@ function initServer() {
 
 	app.listen(port);
 	console.info('server listen on:%s', port);
+	// runTimtam(6000);
+}
+
+
+function runTimtam(port) {
+	const spawn = require('child_process').spawn;
+	let file = path.join(__dirname, 'timtam');
+	let args = [file];
+	if (config.logPath) {
+		args.push('--log', config.logPath);
+	}
+
+	if (config.logServer) {
+		args.push('--server', config.logServer);
+	}
+
+	if (config.logMongoServer) {
+		args.push('--mongo', config.logMongoServer);
+	}
+
+	const cmd = spawn('node', args);
+
+	cmd.stdout.on('data', function(data) {
+		console.info('timtam receiver:' + data);
+	});
+
+	cmd.stderr.on('data', function(data) {
+		console.error('timtam receiver:' + data);
+	});
+
+	cmd.on('close', function(code) {
+		console.info('timtam receiver exited with code ' + code);
+		let timer = setTimeout(function() {
+			runTimtam(port);
+		}, 5 * 1000);
+		timer.unref();
+	});
+
 }

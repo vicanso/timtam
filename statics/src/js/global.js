@@ -22,6 +22,7 @@
 		};
 		TMP.resources.push(data);
 		if (CONFIG.env === 'development') {
+			throw err;
 			alert(JSON.stringify(data));
 		}
 	};
