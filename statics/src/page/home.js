@@ -3,12 +3,12 @@ requirejs(['component/app', 'component/rest', 'component/util', 'component/log-b
 
 	window.TIMING.end('page');
 	app.ready(function() {
-		logBox.render('logBoxContainer');
-		rest.user().then(function(res) {
-			util.debug('user info:%j', res);
-		}, function(err) {
-			console.dir(err);
-		});
+		var log = logBox.render('logBoxContainer');
+		log.setState({
+			options: {
+				time: false
+			}
+		})
 	});
 
 });

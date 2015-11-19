@@ -1,7 +1,8 @@
 {
   "home": {
     "css": [
-      "/css/global.css"
+      "/css/global.css",
+      "/css/log-box.css"
     ],
     "js": [
       "/libs/lodash.js",
@@ -12,6 +13,6 @@
       "/js/global.js",
       "/page/home.js"
     ],
-    "modifiedAt": "2015-11-18T14:27:00.209"
+    "modifiedAt": "2015-11-19T09:50:22.762"
   }
 }

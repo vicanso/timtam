@@ -1,128 +1,101 @@
 
-var http = require('component/http');
+var rest = require('component/rest');
+var classNames = require('component/classnames');
 
 var Log = React.createClass({
-  render: function() {
-    return (
-      <div className="log">
-        {this.props.message}
-      </div>
-    );
-  }
+	render: function() {
+		var options = this.props.options;
+		var log = this.props.log;
+		var obj = {
+			level: true
+		};
+		obj[log.level] = true;
+		var tagClass = classNames(obj); 
+		var timeHtml = '';
+		var timeClass = classNames({
+			time: true
+		});
+		if (options.time) {
+			timeHtml = <span className={timeClass}>{log.time}</span>
+		}
+		return (
+			<p className="log">
+				{timeHtml}
+				<span className={tagClass}>[{log.level}]</span>
+				{log.message}
+			</p>
+		);
+	}
 });
-
-// var Comment = React.createClass({
-//   rawMarkup: function() {
-//     var rawMarkup = marked(this.props.children.toString(), {sanitize: true});
-//     return { __html: rawMarkup };
-//   },
-
-//   render: function() {
-//     return (
-//       <div className="comment">
-//         <h2 className="commentAuthor">
-//           {this.props.author}
-//         </h2>
-//         <span dangerouslySetInnerHTML={this.rawMarkup()} />
-//       </div>
-//     );
-//   }
-// });
-
 
 
 var LogList = React.createClass({
-  render: function() {
-    var logNodes = this.props.data.mao(function(log) {
-      return (
-        <Log message={log.message} />
-      );
-    });
-    return (
-      <div className="logList">
-        {logNodes}
-      </div>
-    );
-  }
+	render: function() {
+		var arr = this.props.data;
+		var options = this.props.options;
+		var logNodes = '正在加载，请稍候...';
+
+		if (arr) {		
+			var dateClass = classNames({
+				date: true
+			});
+			var currentDate = '';
+			logNodes = arr.map(function(log, index) {
+				var dateHtml = '';
+				if (log.date !== currentDate) {
+					dateHtml = <div className={dateClass}>{log.date}</div>;
+					currentDate = log.date;
+				}
+				return (
+					<div key={index}>
+						{dateHtml}
+						<Log log={log} options={options} />
+					</div>
+				);
+			});
+		}
+		return (
+			<div className="logList">
+				{logNodes}
+			</div>
+		);
+	}
 });
-
-// var CommentList = React.createClass({
-//   render: function() {
-//     var commentNodes = this.props.data.map(function(comment) {
-//       return (
-//         <Comment author={comment.author} key={comment.id}>
-//           {comment.text}
-//         </Comment>
-//       );
-//     });
-//     return (
-//       <div className="commentList">
-//         {commentNodes}
-//       </div>
-//     );
-//   }
-// });
-
 
 
 var LogBox = React.createClass({
-  getInitialState: function() {
-    return {
-      data: null
-    };
-  },
-  componentDidMount: function() {
-    http.get('/log/filter/test').then(function(res) {
-      console.dir(res);
-    }.bind(this), function(err) {
+	getInitialState: function() {
+		return {
+			data: null,
+			options: {
+				// 是否显示日志时间
+				time: true
+			}
+		};
+	},
+	componentDidMount: function() {
+		rest.logs('test').then(function(res) {
+			this.setState({data: res});
+		}.bind(this), function(err) {
 
-    }.bind(this));
-  },
-  render: function() {
-    return (
-      <div className="logBox">
-      </div>
-    );
-  }
+		}.bind(this));
+	},
+	render: function() {
+		return (
+			<div className="logBox">
+				<h1>Logs</h1>
+				<LogList data={this.state.data} options={this.state.options} />
+			</div>
+		);
+	}
 });
 
 
 
 
 exports.render = function(id){
-  ReactDOM.render(
-    <LogBox />,
-    document.getElementById(id)
-  );
+	return ReactDOM.render(
+		<LogBox />,
+		document.getElementById(id)
+	);
 };
-
-
-
-// // tutorial13.js
-// var CommentBox = React.createClass({
-//   getInitialState: function() {
-//     return {data: []};
-//   },
-//   componentDidMount: function() {
-//     $.ajax({
-//       url: this.props.url,
-//       dataType: 'json',
-//       cache: false,
-//       success: function(data) {
-//         this.setState({data: data});
-//       }.bind(this),
-//       error: function(xhr, status, err) {
-//         console.error(this.props.url, status, err.toString());
-//       }.bind(this)
-//     });
-//   },
-//   render: function() {
-//     return (
-//       <div className="commentBox">
-//         <h1>Comments</h1>
-//         <CommentList data={this.state.data} />
-//         <CommentForm />
-//       </div>
-//     );
-//   }
-// });
