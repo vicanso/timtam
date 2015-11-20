@@ -1,6 +1,7 @@
 'use strict';
 
 var http = require('component/http');
+var util = require('component/util');
 
 
 exports.exception = exception;
@@ -9,51 +10,15 @@ exports.requirejsStats = requirejsStats;
 exports.user = user;
 exports.ajaxStats = ajaxStats;
 exports.logs = logs;
+exports.listApp = listApp;
 
-function format(date) {
-	date = new Date(date);
-	var year = date.getFullYear();
-
-	var month = date.getMonth() + 1;
-
-	var day = date.getDate();
-
-	if (month < 10) {
-		month = '0' + month;
-	}
-	if (day < 10) {
-		day = '0' + day;
-	}
-
-	var hours = date.getHours();
-	if (hours < 10) {
-		hours = '0' + hours;
-	}
-
-	var minutes = date.getMinutes();
-	if (minutes < 10) {
-		minutes = '0' + minutes;
-	}
-
-	var seconds = date.getSeconds();
-	if (seconds < 10) {
-		seconds = '0' + seconds;
-	}
-
-	var ms = date.getTime() % 1000;
-	ms = '00' + ms;
-
-	ms = '.' + ms.substring(ms.length - 3);
-
-	return '' + year + '-' + month + '-' + day + ' ' + hours + ':' + minutes + ':' + seconds + ms;
-}
 
 
 function logs(app, query) {
 	var res = get('/log/filter/' + app);
 	res.then(function(data) {
 		_.forEach(data, function(item) {
-			var arr = format(item.date).split(' ');
+			var arr = util.formatDate(new Date(item.date), true).split(' ');
 			item.time = arr[1];
 			item.date = arr[0];
 		});
@@ -62,6 +27,13 @@ function logs(app, query) {
 	return res;
 }
 
+/**
+ * [listApp description]
+ * @return {[type]} [description]
+ */
+function listApp() {
+	return get('/log/apps');
+}
 
 /**
  * [exception 异常出错统计]
