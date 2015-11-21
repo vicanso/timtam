@@ -69,14 +69,10 @@ var LogFilterForm = React.createClass({
 		var arr = util.formatDate(new Date()).split(' ');
 		return {
 			apps: null,
-			begin: {
-				date: arr[0],
-				time: '00:00'
-			},
-			end: {
-				date: arr[0],
-				time: arr[1].substring(0, 5)
-			}
+			beginDate: arr[0],
+			beginTime: '00:00',
+			endDate: arr[0],
+			endTime: arr[1]
 		};
 	},
 	componentDidMount: function() {
@@ -92,24 +88,20 @@ var LogFilterForm = React.createClass({
 		this.setState({app: e.target.value});
 	},
 	handleDateChange: function(e) {
-		var v = e.target.value;
-		var key = e.target.dataset.key;
-		var arr = key.split('-');
 		var data = {};
-		var tmp = {};
-		tmp[arr[1]] = v;
-		data[arr[0]] = tmp;
+		data[e.target.dataset.key] = e.target.value;
 		this.setState(data);
-		console.dir(this.state);
 	},
 	handleSumit: function(e){
 		e.preventDefault();
 		var state = this.state;
+		var begin = state.beginDate + ' ' + state.beginTime;
+		var end = state.endDate + ' ' + state.endTime;
 		var data = {
 			app: state.app,
-			begin : state.begin.date + ' ' + state.begin.time
+			begin: (new Date(begin)).toISOString(),
+			end: (new Date(end)).toISOString()
 		};
-
 		this.props.onFilterSummit(data);
 	},
 	render: function() {
@@ -124,15 +116,15 @@ var LogFilterForm = React.createClass({
 		return (
 			<form className="pure-form logFilter" onSubmit={this.handleSumit}>
 				<fieldset>
-					<legend>filter for log</legend>
+					<i className="fa fa-filter"></i>
 					<select onChange={this.handleAppSelect}>
 						{optionsHtml}
 					</select>
-					<input type="date" placeholder="log begin date" onChange={this.handleDateChange} value={state.begin.date} data-key="begin-date" />
-					<input type="time" placeholder="log begin time" onChange={this.handleDateChange} value={state.begin.time} data-key="begin-time" />
-					<span className="divide"></span>
-					<input type="date" placeholder="log end date" onChange={this.handleDateChange} value={state.end.date} data-key="end-date" />
-					<input type="time" placeholder="log end time" onChange={this.handleDateChange} value={state.end.time} data-key="end-time" />
+					<input type="date" placeholder="log begin date" onChange={this.handleDateChange} value={state.beginDate} data-key="beginDate" />
+					<input type="time" placeholder="log begin time" onChange={this.handleDateChange} value={state.beginTime} data-key="beginTime" />
+					<span className="divide">-</span>
+					<input type="date" placeholder="log end date" onChange={this.handleDateChange} value={state.endDate} data-key="endDate" />
+					<input type="time" placeholder="log end time" onChange={this.handleDateChange} value={state.endTime} data-key="endTime" />
 					<button type="submit" className="pure-button pure-button-primary">Submit</button>
 				</fieldset>
 			</form>
@@ -152,9 +144,10 @@ var LogBox = React.createClass({
 		};
 	},
 	handleFilterSubmit: function(data) {
-		console.dir(data);
+		var app = data.app;
+		delete data.app;
 		this.setState({data: null});
-		rest.logs(data.app).then(function(res) {
+		rest.logs(app, data).then(function(res) {
 			this.setState({data: res});
 		}.bind(this), function(err) {
 
@@ -170,7 +163,6 @@ var LogBox = React.createClass({
 	render: function() {
 		return (
 			<div className="logBox">
-				<h1>Logs</h1>
 				<LogFilterForm onFilterSummit={this.handleFilterSubmit} />
 				<LogList data={this.state.data} options={this.state.options} />
 			</div>

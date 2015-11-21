@@ -6,6 +6,7 @@ var debug = require('component/debug');
 exports.emitterWrapper = emitterWrapper;
 exports.debug = getDebug();
 exports.formatDate = formatDate;
+exports.stringify = stringify;
 
 
 /**
@@ -27,6 +28,23 @@ function emitterWrapper(obj) {
  */
 function getDebug() {
 	return debug('jt.albi');
+}
+
+
+/**
+ * [stringify description]
+ * @param  {[type]} query [description]
+ * @param  {[type]} sep   [description]
+ * @param  {[type]} eq    [description]
+ * @return {[type]}       [description]
+ */
+function stringify(query, sep, eq) {
+	sep = sep || '&';
+	eq = eq || '=';
+	var arr = _.map(query, function(v, k) {
+		return k + eq + v;
+	});
+	return arr.join(sep);
 }
 
 

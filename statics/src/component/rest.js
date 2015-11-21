@@ -13,9 +13,18 @@ exports.logs = logs;
 exports.listApp = listApp;
 
 
-
+/**
+ * [logs description]
+ * @param  {[type]} app   [description]
+ * @param  {[type]} query [description]
+ * @return {[type]}       [description]
+ */
 function logs(app, query) {
-	var res = get('/log/filter/' + app);
+	var url = '/log/filter/' + app;
+	if (query) {
+		url += ('?' + util.stringify(query));
+	}
+	var res = get(url);
 	res.then(function(data) {
 		_.forEach(data, function(item) {
 			var arr = util.formatDate(new Date(item.date), true).split(' ');
@@ -26,6 +35,7 @@ function logs(app, query) {
 	});
 	return res;
 }
+
 
 /**
  * [listApp description]

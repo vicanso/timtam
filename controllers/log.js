@@ -14,14 +14,27 @@ function* filter() {
 	let ctx = this;
 	let collection = ctx.params.app;
 	let data = Joi.validateThrow(ctx.query, {
-		// conditions: Joi.object().default({}),
-		begin: Joi.string().length(10).regex(/^\d{4}\-\d{2}\-\d{2}/),
-		end: Joi.string().length(10).regex(/^\d{4}\-\d{2}\-\d{2}/),
+		begin: Joi.date().iso(),
+		end: Joi.date().iso(),
 		limit: Joi.number().integer().min(1).max(100).default(30),
 		skip: Joi.number().integer().min(0).default(0)
 	});
 	let options = _.pick(data, ['limit', 'skip']);
-	let docs = yield timtamMongo.get(collection, {}, options);
+	var conditions = {};
+	var dateConditions = {};
+
+	if (data.begin) {
+		dateConditions['$gte'] = data.begin.toISOString();
+	}
+	if (data.end) {
+		dateConditions['$lte'] = data.end.toISOString();
+	}
+
+	if (!_.isEmpty(dateConditions)) {
+		conditions.date = dateConditions;
+	}
+
+	let docs = yield timtamMongo.get(collection, conditions, options);
 	ctx.body = docs;
 }
 
