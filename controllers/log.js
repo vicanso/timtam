@@ -1,5 +1,5 @@
 'use strict';
-const timtamMongo = require('../../timtam-mongo');
+const timtamMongo = require('timtam-mongo');
 const config = localRequire('config');
 const Joi = require('joi');
 const _ = require('lodash');

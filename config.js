@@ -46,7 +46,7 @@ exports.logServer = process.env.LOG_SERVER || 'udp://127.0.0.1:6000';
 
 exports.logPath = '/data/timtam';
 
-exports.logMongoServer = 'mongodb://127.0.0.1/timtam';
+exports.logMongoServer = process.env.MONGO || 'mongodb://127.0.0.1/timtam';
 
 exports.consul = process.env.CONSUL || 'http://127.0.0.1:8500';
 

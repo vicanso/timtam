@@ -1,6 +1,6 @@
 'use strict';
-const receiver = require('../timtam-receiver');
-const timtamMongo = require('../timtam-mongo');
+const receiver = require('timtam-receiver');
+const timtamMongo = require('timtam-mongo');
 const program = require('commander');
 const pkg = require('./package');
 const url = require('url');
