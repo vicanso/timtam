@@ -1,0 +1,28 @@
+{
+  "name": "timtam",
+  "description": "timtam log server",
+  "version": "0.0.1",
+  "author": {
+    "name": "vicanso 小墨鱼",
+    "email": "vicansocanbico@gmail.com"
+  },
+  "keywords": [
+    "timtam",
+    "log"
+  ],
+  "main": "./app",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vicanso/timtam.git"
+  },
+  "readmeFilename": "README.md",
+  "devDependencies": {},
+  "readme": "timtam log server",
+  "dependencies": {
+    "commander": "^2.9.0",
+    "timtam-logger": "^0.2.2",
+    "timtam-mongo": "0.0.3",
+    "timtam-receiver": "0.0.2"
+  }
+}
