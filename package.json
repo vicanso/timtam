@@ -23,6 +23,6 @@
     "commander": "^2.9.0",
     "timtam-logger": "^0.2.2",
     "timtam-mongo": "0.0.3",
-    "timtam-receiver": "0.0.2"
+    "timtam-receiver": "0.0.3"
   }
 }
