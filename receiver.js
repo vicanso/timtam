@@ -19,14 +19,26 @@ function run() {
 		timtamReceiver.addTransport(fileTransport);
 		console.info('log file save in path:' + config.logPath);
 	}
-	if (config.zmq) {
-		const timtamZmq = require('timtam-zmq');
-		let zmqArr = config.zmq.split(':');
-		timtamZmq.init(zmqArr[1], zmqArr[0]);
-	}
+	initCopy(config.copyPort);
+
+
 	let arr = config.udp.split(':');
 	let port = arr[1];
 	let host = arr[0];
 
 	timtamReceiver.bindUDP(port, host);
+}
+
+function initCopy(port) {
+	const dgram = require('dgram');
+	const client = dgram.createSocket('udp4');
+	timtamReceiver.addTransport({
+		write: function(app, data) {
+			let buf = new Buffer(JSON.stringify({
+				app: app,
+				log: data
+			}));
+			client.send(buf, 0, buf.length, port, '127.0.0.1');
+		}
+	});
 }

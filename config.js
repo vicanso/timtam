@@ -18,6 +18,8 @@ exports.udpList = program.udpList || '6001,6002';
 
 exports.udp = program.udp;
 
+exports.copyPort = 9000;
+
 exports.mongo = program.mongo;
 
 exports.zmq = program.zmq;

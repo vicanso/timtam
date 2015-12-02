@@ -57,7 +57,6 @@ function initServer() {
 		let index = req.url.indexOf('/udp/');
 		if (index !== -1) {
 			let app = req.url.substring(5);
-			console.dir(app);
 			res.writeHead(200, {
 				'Content-Type': 'application/json; charset=utf-8'
 			});
@@ -76,6 +75,8 @@ function initServer() {
 			console.info('http server listen on:' + config.port);
 		}
 	});
+
+	initUDPServer(config.copyPort);
 }
 
 function runReceiver(args) {
@@ -100,4 +101,29 @@ function runReceiver(args) {
 		}, 5 * 1000);
 		timer.unref();
 	});
+}
+
+
+function initUDPServer(port) {
+	const dgram = require("dgram");
+
+	const server = dgram.createSocket("udp4");
+
+	server.on("error", function(err) {
+		console.log("server error:\n" + err.stack);
+		server.close();
+	});
+
+	server.on("message", function(msg, rinfo) {
+		console.log("server got: " + msg + " from " +
+			rinfo.address + ":" + rinfo.port);
+	});
+
+	server.on("listening", function() {
+		var address = server.address();
+		console.log("server listening " +
+			address.address + ":" + address.port);
+	});
+
+	server.bind(port, '127.0.0.1');
 }
