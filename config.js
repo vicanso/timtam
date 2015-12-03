@@ -1,7 +1,9 @@
 'use strict';
 const pkg = require('./package');
 const program = require('commander');
-
+const env = process.env.NODE_ENV || 'development';
+const defaultUdpList = env === 'development' ? '6300,6400' : '6001,6002';
+const defautHttpPort = env === 'development' ? 6200 : 6000;
 program
 	.version(pkg.version)
 	.option('-p, --port <n>', 'HTTP Port, default is 6000')
@@ -12,9 +14,11 @@ program
 	.option('-l, --logPath <n>', 'The path for log file')
 	.parse(process.argv);
 
-exports.port = program.port || 6000;
+exports.env = env;
 
-exports.udpList = program.udpList || '6001,6002';
+exports.port = program.port || defautHttpPort;
+
+exports.udpList = program.udpList || defaultUdpList;
 
 exports.udp = program.udp;
 
@@ -24,4 +28,6 @@ exports.mongo = program.mongo;
 
 exports.zmq = program.zmq;
 
-exports.logPath = program.logPath
+exports.logPath = program.logPath;
+
+exports.appUrlPrefix = env === 'development' ? '' : '/timtam';

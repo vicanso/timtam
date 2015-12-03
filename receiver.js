@@ -33,11 +33,7 @@ function initCopy(port) {
 	const dgram = require('dgram');
 	const client = dgram.createSocket('udp4');
 	timtamReceiver.addTransport({
-		write: function(app, data) {
-			let buf = new Buffer(JSON.stringify({
-				app: app,
-				log: data
-			}));
+		write: function(app, data, buf) {
 			client.send(buf, 0, buf.length, port, '127.0.0.1');
 		}
 	});
