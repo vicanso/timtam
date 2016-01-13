@@ -1,33 +1,63 @@
 'use strict';
-const pkg = require('./package');
-const program = require('commander');
+const pkg = localRequire('package');
+const path = require('path');
 const env = process.env.NODE_ENV || 'development';
-const defaultUdpList = env === 'development' ? '6300,6400' : '6001,6002';
-const defautHttpPort = env === 'development' ? 6200 : 6000;
-program
-	.version(pkg.version)
-	.option('-p, --port <n>', 'HTTP Port, default is 6000')
-	.option('--udpList <n>', 'UDP Port, default is 6001,6002, eg:--udpList=6001 --udpList=6001,6002')
-	.option('--mongo <n>', 'Mongodb uri, eg:--mongo=mongodb://localhost/timtam')
-	.option('--udp <n>', 'child_process udp port, app will set it auto.')
-	.option('--zmq <n>', 'eg: 192.168.1.1:6010')
-	.option('-l, --logPath <n>', 'The path for log file')
-	.parse(process.argv);
+
+exports.version = pkg.appVersion;
 
 exports.env = env;
 
-exports.port = program.port || defautHttpPort;
+exports.port = process.env.PORT || 3000;
 
-exports.udpList = program.udpList || defaultUdpList;
+exports.app = pkg.name;
 
-exports.udp = program.udp;
+exports.name = `${pkg.name}-${process.env.NAME || process.env.HOST_NAME || Date.now()}`;
 
-exports.copyPort = 9000;
+// app url prefix for all request 
+exports.appUrlPrefix = env === 'development' ? '' : '/titam';
 
-exports.mongo = program.mongo;
+// static file url prefix
+exports.staticUrlPrefix = '/static';
 
-exports.zmq = program.zmq;
+// static file path
+exports.staticPath = env === 'development' ? path.join(__dirname, 'public') :
+	path.join(__dirname, 'assets');
 
-exports.logPath = program.logPath;
+exports.jspmPath = path.join(__dirname, 'jspm');
 
-exports.appUrlPrefix = env === 'development' ? '' : '/timtam';
+exports.componentPath = path.join(__dirname, 'assets/components');
+
+// static file cache-control max-age
+exports.staticMaxAge = env === 'development' ? 0 : 365 * 24 * 3600;
+
+// log server url
+exports.log = process.env.LOG || ((env === 'development' || env === 'test') ? '' : 'timtam://localhost:7001');
+
+exports.trackCookie = '_jt';
+
+// http log type
+exports.logType = env === 'development' ? 'dev' : `:remote-addr - :cookie[${exports.trackCookie}] - :uuid ":method :url HTTP/:http-version" :status :length ":referrer" ":user-agent"`;
+
+// http stats reset interval
+exports.httpStatsResetInterval = 30 * 60 * 1000;
+
+// http connection limit options
+exports.limitOptions = {
+	mid: 100,
+	high: 500
+};
+
+// http request concurrency reach high, wait for `limitResetInterval` to reset app 'running'
+exports.limitResetInterval = 5000;
+
+// template options for tempate middleware
+exports.templateOptions = {
+	pretty: false,
+	cache: env !== 'development'
+};
+
+// admin token
+exports.adminToken = '7c4a8d09ca3762af61e59520943dc26494f8941b';
+
+// view root path
+exports.viewPath = path.join(__dirname, 'views');

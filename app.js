@@ -1,137 +1,133 @@
 'use strict';
-const pkg = require('./package');
-const logger = require('timtam-logger');
-const config = require('./config');
-const path = require('path');
-const http = require('http');
-const fs = require('fs');
-const io = require('./lib/io');
-initServer();
+require('./init');
+const Koa = require('koa');
+const config = localRequire('config');
+const globals = localRequire('globals');
+const errors = localRequire('errors');
+const middlewares = localRequire('middlewares');
+const koaConvert = require('koa-convert');
+const _ = require('lodash');
+const io = localRequire('services/io');
 
-/**
- * [init description]
- * @return {[type]} [description]
- */
-function initLogger() {
-	logger.init({
-		app: pkg.name
-	});
-	logger.add('console');
-}
-
-/**
- * [initServer 初始化]
- * @return {[type]} [description]
- */
-function initServer() {
-	initLogger();
-	let udpList = config.udpList.split(',');
-	let args = [];
-	if (config.logPath) {
-		args.push('--logPath', config.logPath);
-	}
-	if (config.mongo) {
-		args.push('--mongo', config.mongo);
-	}
-	let serverList = udpList.map(function(udp) {
-		udp = udp.trim();
-		let tmpArgs = args.slice(0);
-		if (udp.indexOf(':') === -1) {
-			udp = '127.0.0.1:' + udp;
-		}
-		let arr = udp.split(':');
-		tmpArgs.push('--udp', udp);
-		runReceiver(tmpArgs);
-		return {
-			type: 'udp',
-			host: arr[0],
-			port: arr[1]
-		};
-	});
-
-
-	let httpServer = initHTTPServer(serverList, config.port);
-	io.init(httpServer);
-}
-
-/**
- * [runReceiver 以child process的方式运行timtam receiver]
- * @param  {[type]} args [description]
- * @return {[type]}      [description]
- */
-function runReceiver(args) {
-	const spawn = require('child_process').spawn;
-	let file = path.join(__dirname, 'receiver');
-	args.unshift(file);
-
-	const cmd = spawn('node', args);
-
-	cmd.stdout.on('data', function(data) {
-		console.info('receiver ' + data);
-	});
-
-	cmd.stderr.on('data', function(data) {
-		console.error('receiver ' + data);
-	});
-
-	cmd.on('close', function(code) {
-		console.error('receiver exited with code:' + code);
-		let timer = setTimeout(function() {
-			runReceiver(args);
-		}, 5 * 1000);
-		timer.unref();
-	});
+/* istanbul ignore if */
+if (require.main === module) {
+	initServer(config.port);
 }
 
 
+exports.initServer = initServer;
 
-/**
- * [initHTTPServer 初始化http server，用于返回timtam recevier的类型和ip]
- * @param  {[type]} serverList [description]
- * @param  {[type]} port       [description]
- * @return {[type]}            [description]
- */
-function initHTTPServer(serverList, port) {
+function initServer(port) {
+	localRequire('tasks');
+	const mount = require('koa-mounting');
+	const app = new Koa();
+	// app.keys = ['im a newer secret', 'i like turtle'];
 	const appUrlPrefix = config.appUrlPrefix;
-	const server = http.createServer(function(req, res) {
-		let url = req.url;
-		if (appUrlPrefix) {
-			if (url.indexOf(appUrlPrefix) !== 0) {
-				res.writeHead(404);
-				res.end('Not Found');
-				return;
-			} else {
-				url = url.substring(appUrlPrefix.length);
-			}
-		}
-		if (url === '/index.html') {
-			fs.readFile(__dirname + '/public/index.html',
-				function(err, data) {
-					if (err) {
-						res.writeHead(500);
-						return res.end('Error loading index.html');
-					}
-					res.writeHead(200);
-					res.end(data);
-				});
-		} else if (url === '/udp') {
-			let app = req.url.substring(5);
-			res.writeHead(200, {
-				'Content-Type': 'application/json; charset=utf-8'
-			});
-			res.end(JSON.stringify(serverList));
-		} else {
-			res.writeHead(404);
-			res.end('Not Found');
-		}
-	});
-	server.listen(port, function(err) {
-		if (err) {
-			console.error(err);
-		} else {
-			console.info('http server listen on:' + port);
-		}
+
+	// error handler
+	app.use(middlewares.error);
+
+
+	app.use(middlewares.entry(appUrlPrefix, config.name));
+
+	// ping for health check
+	app.use(mount('/ping', ping));
+
+	// http log
+	const koaLog = require('koa-log');
+
+	koaLog.morgan.token('uuid', function getUUID(ctx) {
+		return ctx.get('X-UUID') || 'unknown';
 	});
 
+	app.use(koaLog(config.logType));
+
+	// http stats middleware
+	app.use(middlewares['http-stats']({
+		sdc: localRequire('helpers/sdc')
+	}));
+
+	// http connection limit
+	app.use(middlewares.limit(config.limitOptions, config.limitResetInterval));
+
+
+	if (config.env === 'development') {
+		app.use(mount(
+			config.staticUrlPrefix,
+			require('koa-stylus-parser')(config.staticPath)
+		));
+	}
+
+	// jspm
+	app.use(mount(
+		config.staticUrlPrefix + '/jspm',
+		require('koa-static-serve')(
+			config.jspmPath, {
+				maxAge: config.staticMaxAge,
+				headers: {
+					'Vary': 'Accept-Encoding'
+				}
+			}
+		)
+	));
+
+	// static file middleware, add default header: Vary
+	app.use(mount(
+		config.staticUrlPrefix,
+		require('koa-static-serve')(
+			config.staticPath, {
+				maxAge: config.staticMaxAge,
+				headers: {
+					'Vary': 'Accept-Encoding'
+				}
+			}
+		)
+	));
+
+	app.use(require('koa-methodoverride')());
+
+	app.use(require('koa-bodyparser')());
+
+	app.use(middlewares.debug());
+
+
+
+	app.use(koaConvert(require('koa-fresh')()));
+
+	app.use(koaConvert(require('koa-etag')()));
+
+
+	app.use(middlewares.state(localRequire('versions')));
+
+	app.use(middlewares.picker('_fields'));
+
+	app.use(localRequire('router').routes());
+
+	app.on('error', _.noop);
+
+
+	const server = app.listen(port, function(err) {
+		if (err) {
+			console.error(`server listen on ${port} fail, err:${err.message}`);
+		} else {
+			console.info(`server listen on ${port}`);
+		}
+	});
+	io.init(server);
 	return server;
+}
+
+
+
+/**
+ * [ping ping middleware]
+ * @param  {[type]} ctx [description]
+ * @return {[type]}     [description]
+ */
+function ping(ctx) {
+	if (globals.get('status') !== 'running') {
+		throw errors.get('the server is not running now!');
+	} else {
+		ctx.body = 'pong';
+	}
 }

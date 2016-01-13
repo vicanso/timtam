@@ -1,30 +1,99 @@
 {
   "name": "timtam",
-  "description": "timtam log server",
-  "version": "0.0.1",
+  "description": "log monitoring in your browser",
+  "version": "0.0.2",
   "author": {
     "name": "vicanso 小墨鱼",
     "email": "vicansocanbico@gmail.com"
   },
   "keywords": [
-    "timtam",
-    "log"
+    "koa",
+    "albi",
+    "log",
+    "log.io"
   ],
-  "main": "./app",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/vicanso/timtam.git"
+    "url": "https://github.com/vicanso/titam.git"
   },
+  "main": "app",
   "readmeFilename": "README.md",
-  "devDependencies": {},
-  "readme": "timtam log server",
+  "scripts": {
+    "test": "make test"
+  },
   "dependencies": {
-    "commander": "^2.9.0",
+    "bluebird": "^3.1.1",
+    "bytes": "^2.2.0",
     "debug": "^2.2.0",
-    "socket.io": "^1.3.7",
-    "timtam-logger": "^0.2.2",
-    "timtam-mongo": "0.0.3",
-    "timtam-receiver": "0.0.4"
+    "highlight.js": "^9.1.0",
+    "http-errors": "^1.3.1",
+    "jade": "^1.11.0",
+    "joi": "^7.1.0",
+    "jtfileimporter": "^0.4.2",
+    "koa": "^2.0.0-alpha.3",
+    "koa-bodyparser": "^3.0.0",
+    "koa-connection-limit": "^2.0.1",
+    "koa-convert": "^1.2.0",
+    "koa-etag": "^2.1.0",
+    "koa-fresh": "0.0.3",
+    "koa-http-stats": "^2.0.2",
+    "koa-log": "^2.0.0",
+    "koa-methodoverride": "^2.0.0",
+    "koa-mounting": "^2.0.0",
+    "koa-query-checker": "^2.0.0",
+    "koa-router": "^7.0.0",
+    "koa-router-parser": "^2.0.1",
+    "koa-static-serve": "^2.0.2",
+    "lodash": "^4.0.0",
+    "markdown": "^0.5.0",
+    "moment": "^2.11.1",
+    "require-tree": "^1.1.1",
+    "socket.io": "^1.4.4",
+    "statsd-client": "^0.2.1",
+    "superagent-extend": "^0.1.6",
+    "timtam-logger": "^0.3.0",
+    "toobusy-js": "^0.4.2",
+    "url-join": "0.0.1"
+  },
+  "devDependencies": {
+    "buffer-crc32": "^0.2.5",
+    "del": "^2.2.0",
+    "eslint": "^1.10.3",
+    "gulp": "^3.9.0",
+    "gulp-base64": "^0.1.3",
+    "gulp-copy": "0.0.2",
+    "gulp-cssmin": "^0.1.7",
+    "gulp-shell": "^0.5.1",
+    "gulp-stylus": "^2.2.0",
+    "istanbul": "^0.4.1",
+    "jspm": "^0.16.19",
+    "koa-stylus-parser": "^2.0.0",
+    "mocha": "^2.3.4",
+    "nib": "^1.1.0",
+    "path-to-regexp": "^1.2.1",
+    "supertest": "^1.1.0",
+    "through2": "^2.0.0"
+  },
+  "appVersion": "2016-01-12T03:17:40.805Z",
+  "readme": "log monitoring in your browser",
+  "jspm": {
+    "directories": {
+      "baseURL": "jspm",
+      "packages": "jspm/packages"
+    },
+    "dependencies": {
+      "debug": "npm:debug@^2.2.0",
+      "jquery": "npm:jquery@^2.2.0",
+      "lodash": "npm:lodash@^3.10.1",
+      "node-uuid": "npm:node-uuid@^1.4.7",
+      "socket.io-client": "github:socketio/socket.io-client@^1.4.4",
+      "superagent": "npm:superagent@^1.6.1"
+    },
+    "devDependencies": {
+      "babel": "npm:babel-core@^5.8.24",
+      "babel-runtime": "npm:babel-runtime@^5.8.24",
+      "core-js": "npm:core-js@^1.1.4"
+    }
   }
 }
