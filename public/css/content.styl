@@ -1,0 +1,37 @@
+@import './constant'
+
+.contentListContainer
+	position absolute
+	left $NAV_WIDTH
+	position absolute
+	top 0
+	right 0
+	bottom 0
+	background-color #222
+	.logContent
+		color #f8f8f0
+		font-size 14px
+		line-height 1.4
+		position relative
+		height 100%
+		overflow auto
+		.tag
+			position absolute
+			right 0
+			top 0
+		p
+			margin 0
+		.time, .intervalTime
+			margin-right 5px
+			color #a6e22e
+		.intervalTime
+			display block
+			margin auto
+			text-align center
+		.type
+			color #66d9ef
+			margin-right 5px
+			&.error
+				color #f92672
+			&.warn
+				color #ffd569

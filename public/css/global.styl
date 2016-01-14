@@ -4,15 +4,17 @@
 	box-sizing border-box
 	&:before, &:after
 		box-sizing border-box
-
+html, body
+	height 100%
+	overflow hidden
 body
 	color #333
-	font-size 16px
+	// font-size 16px
 	line-height 1.6
 	font-weight 100
 	letter-spacing 0.01em
 	font-family Helvetica, Arial, sans-serif
-	visibility hidden
+	// visibility hidden
 
 a
 	color #3b8bba
@@ -27,9 +29,3 @@ a
 	content " "
 .clearfix:after
 	clear both
-		
-.pageContentContainer
-	margin 0
-	margin-left $NAV_WIDTH
-	@media (max-width:760px)
-		margin-left 0

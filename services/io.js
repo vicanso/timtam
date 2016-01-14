@@ -24,7 +24,6 @@ function init(server) {
 		});
 	});
 	log.on('data', (tag, msg) => {
-		console.dir(tag);
 		_.forEach(subConnDict[tag], (socket) => {
 			socket.emit('data', tag, msg);
 		});
@@ -75,7 +74,6 @@ function addSubConn(tag, socket) {
 	if (!~index) {
 		arr.push(socket);
 	}
-	console.dir(subConnDict);
 }
 
 function removeSubConn(tag, socket) {
@@ -87,5 +85,4 @@ function removeSubConn(tag, socket) {
 	if (!arr.length) {
 		log.unsub(tag);
 	}
-	console.dir(subConnDict);
 }

@@ -68,16 +68,19 @@ class Client {
 			const arr = str.split('\t');
 			const topic = arr[0];
 			if (topic === 'LOG-TAGS') {
-				let tagInfos = _.map(arr[1].split(','), (str) => {
-					let arr = str.split('|');
-					return {
-						name: arr[0],
-						createdAt: parseInt(arr[1]),
-						count: parseInt(arr[2])
-					};
-				});
-				this._tagInfos = tagInfos;
-				emiter.emit('tags', tagInfos);
+				if (!arr[1]) {
+					this._tagInfos = [];
+				} else {
+					this._tagInfos = _.map(arr[1].split(','), (str) => {
+						let arr = str.split('|');
+						return {
+							name: arr[0],
+							createdAt: parseInt(arr[1]),
+							count: parseInt(arr[2])
+						};
+					});
+				}
+				emiter.emit('tags', this._tagInfos);
 			} else {
 				emiter.emit('data', topic, arr[1]);
 			}

@@ -1,7 +1,18 @@
 extends ./layout
 
+mixin Nav
+	nav.navContainer
+		a.text-center.logo(href='javascript:;', title='Timtam')
+			| Timtam
+		#logTagListContaienr
 
 block bodyContainer
-	.homePage.pageContentContainer
+	+Nav
+	
+	#logContentListContainer
+		.contentListContainer
+
+
+	- importer.import('/css/home.css')
 
 	

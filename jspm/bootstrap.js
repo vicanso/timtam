@@ -3,25 +3,14 @@ import * as http from './components/http';
 import _ from 'lodash';
 import $ from 'jquery';
 import * as globals from './components/globals';
-import * as lazyLoad from './components/lazy-load';
-import log from './components/log'
+import homePage from './pages/home'
+
 
 _.defer(() => {
 
 	statistics();
 	init();
-	$('.lazyLoadImage').each(function() {
-		lazyLoad.load($(this));
-	});
 
-	$('#navLink').click(function() {
-		const obj = $(this);
-		obj.next('.navContainer').addBack().toggleClass('active');
-	});
-
-	http.get('/user/me', {
-		'Cache-Control': 'no-cache'
-	})
 });
 
 function statistics() {
