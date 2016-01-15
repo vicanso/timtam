@@ -21,7 +21,7 @@ System.config({
     "core-js": "npm:core-js@1.2.6",
     "debug": "npm:debug@2.2.0",
     "jquery": "npm:jquery@2.2.0",
-    "lodash": "npm:lodash@3.10.1",
+    "lodash": "npm:lodash@4.0.0",
     "moment": "npm:moment@2.11.1",
     "node-uuid": "npm:node-uuid@1.4.7",
     "react": "npm:react@0.14.6",
@@ -355,7 +355,7 @@ System.config({
       "process": "github:jspm/nodelibs-process@0.1.2",
       "source-map": "npm:source-map@0.1.31"
     },
-    "npm:lodash@3.10.1": {
+    "npm:lodash@4.0.0": {
       "process": "github:jspm/nodelibs-process@0.1.2"
     },
     "npm:loose-envify@1.1.0": {

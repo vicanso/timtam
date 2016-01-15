@@ -28,8 +28,9 @@ export function unsub(tag) {
 	const index = _.indexOf(subTags, tag);
 	if (~index) {
 		subTags.splice(index, 1);
+		socket.emit('unsub', tag);
 	}
-	socket.emit('unsub', tag);
+	
 }
 
 export function on(event, listener) {

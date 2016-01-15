@@ -6,9 +6,15 @@ import classnames from 'classnames';
 import _ from 'lodash';
 import Emitter from 'component-emitter';
 import moment from 'moment';
+import debug from '../components/debug';
 
 const emitter = new Emitter();
 
+
+log.on('data', (tag, msg) => {
+	debug('tag:%s, msg:%s', tag, msg);
+	emitter.emit(`log-${tag}`, msg);
+});
 
 class LogContentList extends React.Component {
 	constructor(props) {
@@ -16,21 +22,22 @@ class LogContentList extends React.Component {
 		this.state = {
 			subTags : []
 		};
-		this.onSelectTags = (tags) => {
-			this.setState({
-				subTags : tags
-			});
-		}.bind(this)
+	}
+	onSelectTags(tags) {
+		debug('on select tags:%j', tags);
+		this.setState({
+			subTags : tags
+		});
 	}
 	componentDidMount() {
-		emitter.on('selectTags', this.onSelectTags);
+		emitter.on('selectTags', this.onSelectTags.bind(this));
 	}
 	componentWillUnmount() {
-		emitter.off('selectedTags', this.onSelectTags);
+		emitter.off('selectedTags', this.onSelectTags.bind(this));
 	}
 	render() {
-		const nodes = this.state.subTags.map((tag, index) => {
-			return (<LogContent key={index} tag={tag} />);
+		const nodes = this.state.subTags.map(tag => {
+			return (<LogContent key={tag} tag={tag} />);
 		});
 		return (
 			<div className='contentListContainer pure-g'>
@@ -43,35 +50,44 @@ class LogContentList extends React.Component {
 class LogContent extends React.Component {
 	constructor(props) {
 		super(props);
-		const currntTag = props.tag;
-		const data = [];
+		const currentTag = props.tag;
 		this.state = {
-			data: data,
-			interval: 60 * 1000
+			data: [],
+			keyword: '',
+			interval: 60 * 1000,
+			showFilter: false
 		};
-		this._createdAt = Date.now();
-		const update = _.debounce(() => {
+		this._update = _.debounce(() => {
+			this.forceUpdate();
+		}, 50);
+		this.onChange = _.throttle((e) => {
+			const value = e.target.value.trim();
 			this.setState({
-				data: data
+				keyword: value
 			});
-		}.bind(this));
-		this.onData = (tag, msg) => {
-			if (currntTag === tag) {
-				data.push(msg);
-				console.dir(data.length)
-				update();
-			}
-		};
+		}, 3000);
+	}
+	onData(msg) {
+		this.state.data.push(msg);
+		this._update();
+	}
+	toggleFilter() {
+		this.setState({
+			showFilter: !this.state.showFilter
+		});
 	}
 	componentDidMount() {
-		log.on('data', this.onData);
+		const tag = this.props.tag;
+		emitter.on(`log-${tag}`, this.onData.bind(this));
 	}
 	componentWillUnmount() {
-		log.off('data', this.onData);	
+		const tag = this.props.tag;
+		emitter.off(`log-${tag}`, this.onData.bind(this));
+		this._update.cancel();
 	}
 	render() {
 		const interval = this.state.interval;
-		const createdAt = this._createdAt;
+		const createdAt = 0;
 		let currentIndex = -1;
 		const format = (str) => {
 			const dateLenth = 24;
@@ -84,18 +100,32 @@ class LogContent extends React.Component {
 				const currentTimestamp = date.getTime();
 				const tmp = Math.floor((date.getTime() - createdAt) / interval)
 				if (tmp > currentIndex) {
-					dateStr = (<span className='intervalTime'>{moment(date).format('YYYY-MM-DD HH:mm:ss.SSS')}</span>);
+					dateStr = (<span className='intervalTime'>{moment(date).format('YYYY-MM-DD HH:mm:ss')}</span>);
 					currentIndex = tmp;
 				}
 			}
 
 			return {
-				date: dateStr,
+				date: date,
+				dateStr: dateStr,
 				type: str.substring(dateLenth, index + 1).trim(),
 				msg: str.substring(index + 1)
 			};
 		};
-		const nodes = this.state.data.map((msg, i) => {
+		let arr = this.state.data;
+		if (this.state.keyword) {
+			const reg = new RegExp(this.state.keyword, 'gi');
+			const filterArr = [];
+			_.each(arr, (msg) => {
+				const result = _.get(msg.match(reg), '[0]');
+				if (result) {
+					msg = msg.replace(new RegExp(result, 'gi'), `<span class='keyword'>${result}</span>`);
+					filterArr.push(msg);
+				};
+			});
+			arr = filterArr;
+		}
+		const nodes = arr.map((msg, i) => {
 			const data = format(msg);
 			const type = data.type;
 			const itemCss = {
@@ -103,17 +133,26 @@ class LogContent extends React.Component {
 			};
 			itemCss[type.substring(1, type.length - 1)] = true;
 			return (
-				<p key={i}>
-					{data.date}
+				<p key={i + data.date}>
+					{data.dateStr}
 					<span className={classnames(itemCss)}>{data.type}</span>
-					{data.msg}
+					<span dangerouslySetInnerHTML={{__html: data.msg}}></span>
 				</p>
 			);
 		});
-
+		const filterContainerClass = classnames({
+			filterContainer: true,
+			'pure-form': true,
+			hidden: !this.state.showFilter
+		});
 		return (
-			<div className='logContent pure-u-1-2'>
-				<div className='tag'>{this.props.tag}</div>
+			<div className='logContent pure-u-1'>
+				<a className='filterToggle' href='javascript:;' onClick={this.toggleFilter.bind(this)}>F</a>
+				<div className={filterContainerClass}>
+					<div className='tag'>{this.props.tag}</div>
+					<a className='pullRight' href='javascript:;' onClick={this.toggleFilter.bind(this)}>X</a>
+					<input type='text' placeholder='keyword' onChange={this.onChange.bind(this)} />
+				</div>
 				{nodes}
 			</div>
 		);

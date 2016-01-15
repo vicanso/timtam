@@ -61,6 +61,7 @@ function initSocketEvent(socket) {
 
 	socket.emit('tags', log.tags());
 	socketDict.push(socket);
+
 }
 
 
