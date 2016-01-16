@@ -36,8 +36,9 @@ class LogContentList extends React.Component {
 		emitter.off('selectedTags', this.onSelectTags.bind(this));
 	}
 	render() {
+		const itemClass = 'row-' + this.state.subTags.length;
 		const nodes = this.state.subTags.map(tag => {
-			return (<LogContent key={tag} tag={tag} />);
+			return (<LogContent itemClass={itemClass} key={tag} tag={tag} />);
 		});
 		return (
 			<div className='contentListContainer pure-g'>
@@ -54,18 +55,13 @@ class LogContent extends React.Component {
 		this.state = {
 			data: [],
 			keyword: '',
-			interval: 60 * 1000,
+			interval: 0,
 			showFilter: false
 		};
-		this._update = _.debounce(() => {
-			this.forceUpdate();
-		}, 50);
-		this.onChange = _.throttle((e) => {
-			const value = e.target.value.trim();
-			this.setState({
-				keyword: value
-			});
-		}, 3000);
+		this._update = _.throttle(this.forceUpdate.bind(this), 50);
+		this._changeKeyword = _.debounce(this.changeKeyword.bind(this), 1500);
+		this._changeInterval = _.debounce(this.changeInterval.bind(this), 1500);
+		this._onData = this.onData.bind(this);
 	}
 	onData(msg) {
 		this.state.data.push(msg);
@@ -76,18 +72,32 @@ class LogContent extends React.Component {
 			showFilter: !this.state.showFilter
 		});
 	}
+	changeKeyword(e) {
+		const value = e.target.value.trim();
+		this.setState({
+			keyword: value
+		});
+	}
+	changeInterval(e) {
+		const value = parseInt(e.target.value.trim());
+		if (_.isNaN(value)) {
+			return;
+		}
+		this.setState({
+			interval: value
+		});
+	}
 	componentDidMount() {
 		const tag = this.props.tag;
-		emitter.on(`log-${tag}`, this.onData.bind(this));
+		emitter.on(`log-${tag}`, this._onData);
 	}
 	componentWillUnmount() {
 		const tag = this.props.tag;
-		emitter.off(`log-${tag}`, this.onData.bind(this));
+		emitter.off(`log-${tag}`, this._onData);
 		this._update.cancel();
 	}
-	render() {
-		const interval = this.state.interval;
-		const createdAt = 0;
+	getLogNodes(arr) {
+		const interval = this.state.interval * 1000;
 		let currentIndex = -1;
 		const format = (str) => {
 			const dateLenth = 24;
@@ -98,7 +108,7 @@ class LogContent extends React.Component {
 				dateStr = (<span className='time'>{moment(date).format('YYYY-MM-DD HH:mm:ss.SSS')}</span>);
 			} else {
 				const currentTimestamp = date.getTime();
-				const tmp = Math.floor((date.getTime() - createdAt) / interval)
+				const tmp = Math.floor(date.getTime() / interval);
 				if (tmp > currentIndex) {
 					dateStr = (<span className='intervalTime'>{moment(date).format('YYYY-MM-DD HH:mm:ss')}</span>);
 					currentIndex = tmp;
@@ -112,20 +122,8 @@ class LogContent extends React.Component {
 				msg: str.substring(index + 1)
 			};
 		};
-		let arr = this.state.data;
-		if (this.state.keyword) {
-			const reg = new RegExp(this.state.keyword, 'gi');
-			const filterArr = [];
-			_.each(arr, (msg) => {
-				const result = _.get(msg.match(reg), '[0]');
-				if (result) {
-					msg = msg.replace(new RegExp(result, 'gi'), `<span class='keyword'>${result}</span>`);
-					filterArr.push(msg);
-				};
-			});
-			arr = filterArr;
-		}
-		const nodes = arr.map((msg, i) => {
+
+		return arr.map((msg, i) => {
 			const data = format(msg);
 			const type = data.type;
 			const itemCss = {
@@ -140,20 +138,44 @@ class LogContent extends React.Component {
 				</p>
 			);
 		});
+	}
+	render() {
+
+		let arr = this.state.data;
+		if (this.state.keyword) {
+			const reg = new RegExp(this.state.keyword, 'gi');
+			const filterArr = [];
+			_.each(arr, (msg) => {
+				const result = _.get(msg.match(reg), '[0]');
+				if (result) {
+					msg = msg.replace(new RegExp(result, 'gi'), `<span class='keyword'>${result}</span>`);
+					filterArr.push(msg);
+				};
+			});
+			arr = filterArr;
+		}
+		const nodes = this.getLogNodes(arr);
 		const filterContainerClass = classnames({
 			filterContainer: true,
 			'pure-form': true,
-			hidden: !this.state.showFilter
+			isHidden: !this.state.showFilter
 		});
+		const contentClass = {
+			logContentContainer: true,
+			'pure-u-1': true
+		};
+		contentClass[this.props.itemClass] = true;
 		return (
-			<div className='logContent pure-u-1'>
-				<a className='filterToggle' href='javascript:;' onClick={this.toggleFilter.bind(this)}>F</a>
+			<div className={classnames(contentClass)}>
 				<div className={filterContainerClass}>
-					<div className='tag'>{this.props.tag}</div>
-					<a className='pullRight' href='javascript:;' onClick={this.toggleFilter.bind(this)}>X</a>
-					<input type='text' placeholder='keyword' onChange={this.onChange.bind(this)} />
+					<a className='tag' href='javascript:;' onClick={this.toggleFilter.bind(this)}>{this.props.tag}</a>
+					<input type='text' placeholder='filter keyword' onChange={this._changeKeyword} />
+					<label className='mleft15'>Time interval - </label>
+					<input type='number' placeholder='seconds, default:60' onChange={this._changeInterval} />
 				</div>
-				{nodes}
+				<div className='content'>
+					{nodes}
+				</div>
 			</div>
 		);
 	}

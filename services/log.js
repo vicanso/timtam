@@ -71,13 +71,16 @@ class Client {
 				if (!arr[1]) {
 					this._tagInfos = [];
 				} else {
-					this._tagInfos = _.map(arr[1].split(','), (str) => {
-						let arr = str.split('|');
+					const result = _.map(arr[1].split(','), (str) => {
+						const arr = str.split('|');
 						return {
 							name: arr[0],
 							createdAt: parseInt(arr[1]),
 							count: parseInt(arr[2])
 						};
+					});
+					this._tagInfos = _.sortBy(result, tmp => {
+						return -tmp.name;
 					});
 				}
 				emiter.emit('tags', this._tagInfos);

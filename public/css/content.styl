@@ -1,5 +1,59 @@
 @import './constant'
 
+FilterContainerCss()
+	$border = 1px solid #333
+	position absolute
+	right 0
+	top 0
+	left 0
+	padding 3px 5px
+	border-bottom $border
+	background-color $GRAY_COLOR
+	color #222
+	&.isHidden
+		top -35px
+		.tag
+			background-color rgba(235, 249, 242, 0.8)
+	.tag
+		position absolute
+		left 48%
+		top 100%
+		line-height 20px
+		background-color $GRAY_COLOR
+		border-radius 3px
+		margin-top -3px
+		color $BLUE_COLOR
+		padding 0 10px
+		padding-top 3px
+	.close
+		position absolute
+		right 0
+		top 0
+		width 30px
+		bottom 0
+		padding 0 5px 0 10px
+		
+LogContentCss()
+	height 100%
+	overflow-y scroll
+	p
+		margin 0 5px
+		.keyword
+			color $RED_COLOR
+	.time, .intervalTime
+		margin-right 5px
+		color #a6e22e
+	.intervalTime
+		display block
+		margin auto
+		text-align center
+	.type
+		color #66d9ef
+		margin-right 5px
+		&.error
+			color #f92672
+		&.warn
+			color #ffd569
 .contentListContainer
 	position absolute
 	left $NAV_WIDTH
@@ -8,58 +62,29 @@
 	right 0
 	bottom 0
 	background-color #222
-	.logContent
+	.logContentContainer
 		color #f8f8f0
 		font-size 14px
 		line-height 1.4
 		position relative
 		height 100%
 		width 100%
-		overflow-y scroll
+		overflow hidden
+		&.row-2
+			height 50%
+		&.row-3
+			height 33.33%
+		&.row-4
+			height 25%
 		.filterToggle
 			position absolute
 			right 0
-			top 3px
+			top 0
 			line-height 30px
 			padding 0 13px
 			background-color $GRAY_COLOR
 			color $BLUE_COLOR
 		.filterContainer
-			$border = 1px solid #333
-			position absolute
-			right 0
-			top 0
-			left 0
-			padding 3px 5px
-			border-bottom $border
-			background-color $GRAY_COLOR
-			color #222
-			.tag
-				position absolute
-				left 48%
-				top 100%
-				line-height 20px
-				background-color $GRAY_COLOR
-				border-radius 3px
-				margin-top -3px
-				color $GREEN_COLOR
-				padding 0 10px
-				padding-top 3px
-		p
-			margin 0
-			.keyword
-				color $RED_COLOR
-		.time, .intervalTime
-			margin-right 5px
-			color #a6e22e
-		.intervalTime
-			display block
-			margin auto
-			text-align center
-		.type
-			color #66d9ef
-			margin-right 5px
-			&.error
-				color #f92672
-			&.warn
-				color #ffd569
+			FilterContainerCss()
+		.content
+			LogContentCss()
