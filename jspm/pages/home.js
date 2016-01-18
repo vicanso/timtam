@@ -54,17 +54,30 @@ class LogContent extends React.Component {
 		const currentTag = props.tag;
 		this.state = {
 			data: [],
+			// 关键字
 			keyword: '',
-			interval: 0,
-			showFilter: false
+			// 时间显示间隔
+			interval: 60,
+			// 最大日志数量
+			max: 1000,
+			// 是否显示filter
+			showFilter: false,
+			// 是否固定底部
+			shouldScrollBottom: true
 		};
 		this._update = _.throttle(this.forceUpdate.bind(this), 50);
 		this._changeKeyword = _.debounce(this.changeKeyword.bind(this), 1500);
 		this._changeInterval = _.debounce(this.changeInterval.bind(this), 1500);
+		this._changeLogMax = _.debounce(this.changeLogMax.bind(this), 1500);
 		this._onData = this.onData.bind(this);
 	}
 	onData(msg) {
-		this.state.data.push(msg);
+		const data = this.state.data;
+		const max = this.state.max;
+		if (data.length >= max) {
+			data.splice(0, 100);
+		}
+		data.push(msg);
 		this._update();
 	}
 	toggleFilter() {
@@ -87,6 +100,21 @@ class LogContent extends React.Component {
 			interval: value
 		});
 	}
+	changeLogMax(e) {
+		const value = parseInt(e.target.value.trim());
+		if (_.isNaN(value) || value < 100) {
+			return;
+		}
+
+		this.setState({
+			max: value
+		});
+	}
+	toggleShouldScrollBottom() {
+		this.setState({
+			shouldScrollBottom: !this.state.shouldScrollBottom
+		});
+	}
 	componentDidMount() {
 		const tag = this.props.tag;
 		emitter.on(`log-${tag}`, this._onData);
@@ -95,6 +123,12 @@ class LogContent extends React.Component {
 		const tag = this.props.tag;
 		emitter.off(`log-${tag}`, this._onData);
 		this._update.cancel();
+	}
+	componentDidUpdate() {
+		if (this.state.shouldScrollBottom) {
+			const dom = _.last(ReactDOM.findDOMNode(this).children);
+			dom.scrollTop = Number.MAX_VALUE;
+		}
 	}
 	getLogNodes(arr) {
 		const interval = this.state.interval * 1000;
@@ -140,10 +174,10 @@ class LogContent extends React.Component {
 		});
 	}
 	render() {
-
-		let arr = this.state.data;
-		if (this.state.keyword) {
-			const reg = new RegExp(this.state.keyword, 'gi');
+		const state = this.state;
+		let arr = state.data;
+		if (state.keyword) {
+			const reg = new RegExp(state.keyword, 'gi');
 			const filterArr = [];
 			_.each(arr, (msg) => {
 				const result = _.get(msg.match(reg), '[0]');
@@ -158,7 +192,7 @@ class LogContent extends React.Component {
 		const filterContainerClass = classnames({
 			filterContainer: true,
 			'pure-form': true,
-			isHidden: !this.state.showFilter
+			isHidden: !state.showFilter
 		});
 		const contentClass = {
 			logContentContainer: true,
@@ -169,9 +203,13 @@ class LogContent extends React.Component {
 			<div className={classnames(contentClass)}>
 				<div className={filterContainerClass}>
 					<a className='tag' href='javascript:;' onClick={this.toggleFilter.bind(this)}>{this.props.tag}</a>
-					<input type='text' placeholder='filter keyword' onChange={this._changeKeyword} />
+					<input type='text' placeholder='filter keyword' onChange={this._changeKeyword} value={state.keyword} />
 					<label className='mleft15'>Time interval - </label>
-					<input type='number' placeholder='seconds, default:60' onChange={this._changeInterval} />
+					<input type='number' placeholder='seconds, default:60' onChange={this._changeInterval} value={state.interval} />
+					<label className='mleft15'>Log max - </label>
+					<input type='number' placeholder='[100-*],default:1000' onChange={this._changeLogMax} value={state.max} />
+					<label className='mleft15'>Scroll to bottom - </label>
+					<input type='checkbox' checked={state.shouldScrollBottom} onChange={this.toggleShouldScrollBottom.bind(this)} /> 
 				</div>
 				<div className='content'>
 					{nodes}

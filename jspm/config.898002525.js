@@ -16,11 +16,17 @@ System.config({
   map: {
     "babel": "npm:babel-core@5.8.34",
     "babel-runtime": "npm:babel-runtime@5.8.34",
+    "classnames": "npm:classnames@2.2.3",
+    "component-emitter": "npm:component-emitter@1.2.0",
     "core-js": "npm:core-js@1.2.6",
     "debug": "npm:debug@2.2.0",
     "jquery": "npm:jquery@2.2.0",
-    "lodash": "npm:lodash@3.10.1",
+    "lodash": "npm:lodash@4.0.0",
+    "moment": "npm:moment@2.11.1",
     "node-uuid": "npm:node-uuid@1.4.7",
+    "react": "npm:react@0.14.6",
+    "react-dom": "npm:react-dom@0.14.6",
+    "socket.io-client": "github:socketio/socket.io-client@1.4.4",
     "superagent": "npm:superagent@1.6.1",
     "github:jspm/nodelibs-assert@0.1.0": {
       "assert": "npm:assert@1.3.0"
@@ -271,6 +277,9 @@ System.config({
       "create-hash": "npm:create-hash@1.1.2",
       "crypto": "github:jspm/nodelibs-crypto@0.1.0"
     },
+    "npm:fbjs@0.6.1": {
+      "process": "github:jspm/nodelibs-process@0.1.2"
+    },
     "npm:form-data@0.2.0": {
       "async": "npm:async@0.9.2",
       "buffer": "github:jspm/nodelibs-buffer@0.1.0",
@@ -308,7 +317,7 @@ System.config({
     "npm:inherits@2.0.1": {
       "util": "github:jspm/nodelibs-util@0.1.0"
     },
-    "npm:lodash@3.10.1": {
+    "npm:lodash@4.0.0": {
       "process": "github:jspm/nodelibs-process@0.1.2"
     },
     "npm:methods@1.0.1": {
@@ -330,6 +339,9 @@ System.config({
       "path": "github:jspm/nodelibs-path@0.1.0",
       "process": "github:jspm/nodelibs-process@0.1.2",
       "systemjs-json": "github:systemjs/plugin-json@0.1.0"
+    },
+    "npm:moment@2.11.1": {
+      "process": "github:jspm/nodelibs-process@0.1.2"
     },
     "npm:node-uuid@1.4.7": {
       "buffer": "github:jspm/nodelibs-buffer@0.1.0",
@@ -384,6 +396,13 @@ System.config({
     "npm:randombytes@2.0.1": {
       "buffer": "github:jspm/nodelibs-buffer@0.1.0",
       "crypto": "github:jspm/nodelibs-crypto@0.1.0",
+      "process": "github:jspm/nodelibs-process@0.1.2"
+    },
+    "npm:react-dom@0.14.6": {
+      "react": "npm:react@0.14.6"
+    },
+    "npm:react@0.14.6": {
+      "fbjs": "npm:fbjs@0.6.1",
       "process": "github:jspm/nodelibs-process@0.1.2"
     },
     "npm:readable-stream@1.0.27-1": {
