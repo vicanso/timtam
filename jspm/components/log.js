@@ -3,7 +3,7 @@ import io from 'socket.io-client';
 import _ from 'lodash';
 var tagInfos = null;
 const subTags = [];
-const socket = io('http://localhost:3000', {
+const socket = io('/', {
 	reconnection: true
 });
 

@@ -48,6 +48,7 @@
     "lodash": "^4.0.0",
     "markdown": "^0.5.0",
     "moment": "^2.11.1",
+    "node-uuid": "^1.4.7",
     "require-tree": "^1.1.1",
     "socket.io": "^1.4.4",
     "statsd-client": "^0.2.1",
@@ -75,7 +76,7 @@
     "supertest": "^1.1.0",
     "through2": "^2.0.0"
   },
-  "appVersion": "2016-01-18T12:38:29.069Z",
+  "appVersion": "2016-01-20T13:24:32.647Z",
   "readme": "log monitoring in your browser",
   "jspm": {
     "directories": {
