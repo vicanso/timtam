@@ -1,3 +1,7 @@
+npm run init
+
+npm run build
+
 docker build -t timtam .
 
-docker run -d --restart=always -p 3000:3000 -e="LOG=timtam://10.173.180.9:7001" -e="NODE_ENV=production" timtam
+docker run -d --restart=always -e="LOG=timtam://192.168.2.1:7349" -e="NODE_ENV=production" -e="ETCD=http://192.168.2.1:2379" timtam

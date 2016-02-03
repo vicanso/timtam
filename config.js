@@ -11,10 +11,12 @@ exports.port = process.env.PORT || 3000;
 
 exports.app = pkg.name;
 
-exports.name = `${pkg.name}-${process.env.NAME || process.env.HOST_NAME || Date.now()}`;
+// exports.domain = 'timtam.io';
+
+exports.name = `${pkg.name}-${process.env.NAME || process.env.HOSTNAME || Date.now()}`;
 
 // app url prefix for all request 
-exports.appUrlPrefix = env === 'development' ? '' : '/titam';
+exports.appUrlPrefix = env === 'development' ? '' : '/timtam';
 
 // static file url prefix
 exports.staticUrlPrefix = '/static';
@@ -37,6 +39,8 @@ exports.trackCookie = '_jt';
 
 // http log type
 exports.logType = env === 'development' ? 'dev' : `:remote-addr - :cookie[${exports.trackCookie}] - :uuid ":method :url HTTP/:http-version" :status :length ":referrer" ":user-agent"`;
+
+exports.etcd = process.env.ETCD || 'http://localhost:2379';
 
 // http stats reset interval
 exports.httpStatsResetInterval = 30 * 60 * 1000;
