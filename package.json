@@ -79,7 +79,7 @@
     "supertest": "^1.1.0",
     "through2": "^2.0.0"
   },
-  "appVersion": "2016-02-03T08:16:13.972Z",
+  "appVersion": "2016-02-03T14:45:04.746Z",
   "readme": "log monitoring in your browser",
   "jspm": {
     "directories": {

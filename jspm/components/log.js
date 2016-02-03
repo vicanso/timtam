@@ -1,9 +1,11 @@
 'use strict';
 import io from 'socket.io-client';
 import _ from 'lodash';
+import * as globals from './globals';
 var tagInfos = null;
+const prefix = globals.get('CONFIG.appUrlPrefix') || '';
 const subTags = [];
-const socket = io('/', {
+const socket = io(prefix + '/', {
 	reconnection: true
 });
 

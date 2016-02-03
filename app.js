@@ -58,11 +58,13 @@ function initServer(port) {
 		));
 	}
 
+	const denyQuerystring = config.env !== 'development';
 	// jspm
 	app.use(mount(
 		config.staticUrlPrefix + '/jspm',
 		require('koa-static-serve')(
 			config.jspmPath, {
+				denyQuerystring: denyQuerystring,
 				maxAge: config.staticMaxAge,
 				headers: {
 					'Vary': 'Accept-Encoding'
@@ -76,6 +78,7 @@ function initServer(port) {
 		config.staticUrlPrefix,
 		require('koa-static-serve')(
 			config.staticPath, {
+				denyQuerystring: denyQuerystring,
 				maxAge: config.staticMaxAge,
 				headers: {
 					'Vary': 'Accept-Encoding'
