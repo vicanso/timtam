@@ -5,7 +5,8 @@ import * as globals from './globals';
 var tagInfos = null;
 const prefix = globals.get('CONFIG.appUrlPrefix') || '';
 const subTags = [];
-const socket = io(prefix + '/', {
+const socket = io({
+	path: prefix + '/socket.io',
 	reconnection: true
 });
 

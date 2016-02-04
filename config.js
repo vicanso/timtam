@@ -33,7 +33,7 @@ exports.componentPath = path.join(__dirname, 'assets/components');
 exports.staticMaxAge = env === 'development' ? 0 : 365 * 24 * 3600;
 
 // log server url
-exports.log = process.env.LOG || ((env === 'development' || env === 'test') ? '' : 'timtam://localhost:7001');
+exports.log = process.env.LOG;
 
 exports.trackCookie = '_jt';
 

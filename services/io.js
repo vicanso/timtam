@@ -1,6 +1,7 @@
 'use strict';
 const socketIO = require('socket.io');
 const debug = localRequire('helpers/debug');
+const config = localRequire('config');
 const log = require('./log');
 const _ = require('lodash');
 const socketDict = [];
@@ -16,7 +17,9 @@ exports.init = init;
  */
 
 function init(server) {
-	const io = socketIO(server);
+	const io = socketIO(server, {
+		path: `${config.appUrlPrefix}/socket.io`
+	});
 	io.on('connection', initSocketEvent);
 	log.on('tags', (data) => {
 		_.forEach(socketDict, (socket) => {

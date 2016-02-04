@@ -259,7 +259,8 @@ class LogTagList extends React.Component {
 		const selectedTags = this.state.selectedTags;
 		const nodes = this.state.tags.map(tag => {
 			const cs = classnames({
-				active: ~_.indexOf(selectedTags, tag.name)
+				active: ~_.indexOf(selectedTags, tag.name),
+				smallFont: tag.name.length >= 10
 			});
 			return (<li key={tag.name} className={cs}>
 				<a href='javascript:' onClick={this.toggleTag.bind(this)}>{tag.name}</a>

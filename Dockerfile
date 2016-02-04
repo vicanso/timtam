@@ -1,7 +1,7 @@
 FROM vicanso/node
 
-ADD ./ /timtam
+ADD ./ /app
 
 RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
-CMD cd /timtam && node app.js
+CMD cd /app && node app.js
