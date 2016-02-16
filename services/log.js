@@ -60,7 +60,7 @@ class Client {
 			buf = Buffer.concat([this._bufRest, buf]);
 			this._bufRest = null;
 		}
-		while (divideIndex = buf.indexOf(0, index)) {
+		while ((divideIndex = buf.indexOf(0, index)) != null) {
 			if (divideIndex === -1) {
 				break;
 			}
